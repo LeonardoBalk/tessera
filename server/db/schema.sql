@@ -24,8 +24,8 @@ create table events (
   location text,
   category text,
   type event_type not null,
-  price numeric(10, 2) not null,
-  total_capacity integer not null,
+  price numeric(10, 2) not null check (price >= 0),
+  total_capacity integer not null check (total_capacity > 0),
   organizer_id uuid not null references users (id),
   status event_status not null default 'published',
   created_at timestamptz not null default now()
@@ -50,13 +50,15 @@ create table bookings (
   event_id uuid not null references events (id),
   customer_id uuid not null references users (id),
   seat_ids uuid[],
-  quantity integer,
+  quantity integer check (quantity > 0),
   status booking_status not null default 'pending',
+  expires_at timestamptz,
   created_at timestamptz not null default now(),
   constraint bookings_seats_xor_quantity check (
-    (seat_ids is not null and quantity is null) or
+    (seat_ids is not null and array_length(seat_ids, 1) > 0 and quantity is null) or
     (seat_ids is null and quantity is not null)
-  )
+  ),
+  constraint bookings_pending_has_expiry check (status != 'pending' or expires_at is not null)
 );
 
 create index bookings_event_id_idx on bookings (event_id);
@@ -98,7 +100,7 @@ begin
   values (
     new.id,
     new.email,
-    coalesce((new.raw_user_meta_data ->> 'role')::public.user_role, 'customer'),
+    coalesce((new.raw_app_meta_data ->> 'role')::public.user_role, 'customer'),
     coalesce(new.raw_user_meta_data ->> 'name', new.email)
   );
   return new;
@@ -108,6 +110,20 @@ $$ language plpgsql security definer set search_path = public;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function handle_new_user();
+
+create function sync_user_role()
+returns trigger as $$
+begin
+  update public.users
+  set role = coalesce((new.raw_app_meta_data ->> 'role')::public.user_role, role)
+  where id = new.id;
+  return new;
+end;
+$$ language plpgsql security definer set search_path = public;
+
+create trigger on_auth_user_updated
+  after update on auth.users
+  for each row execute function sync_user_role();
 
 create function custom_access_token_hook(event jsonb)
 returns jsonb as $$
@@ -137,3 +153,50 @@ create policy "allow auth admin to read user roles" on public.users
 as permissive for select
 to supabase_auth_admin
 using (true);
+
+create function book_general_admission(
+  p_event_id uuid,
+  p_customer_id uuid,
+  p_quantity integer
+) returns bookings as $$
+declare
+  v_capacity integer;
+  v_booked integer;
+  v_booking bookings;
+begin
+  if p_quantity is null or p_quantity <= 0 then
+    raise exception 'quantity must be greater than zero';
+  end if;
+
+  if not exists (select 1 from public.users where id = p_customer_id and role = 'customer') then
+    raise exception 'invalid customer';
+  end if;
+
+  select total_capacity into v_capacity
+  from public.events
+  where id = p_event_id and type = 'general_admission' and status = 'published'
+  for update;
+
+  if v_capacity is null then
+    raise exception 'event not found or not general admission';
+  end if;
+
+  select coalesce(sum(quantity), 0) into v_booked
+  from public.bookings
+  where event_id = p_event_id
+    and (status = 'paid' or (status = 'pending' and expires_at > now()));
+
+  if v_booked + p_quantity > v_capacity then
+    raise exception 'not enough capacity';
+  end if;
+
+  insert into public.bookings (event_id, customer_id, quantity, status, expires_at)
+  values (p_event_id, p_customer_id, p_quantity, 'pending', now() + interval '10 minutes')
+  returning * into v_booking;
+
+  return v_booking;
+end;
+$$ language plpgsql set search_path = public;
+
+grant execute on function public.book_general_admission to service_role;
+revoke execute on function public.book_general_admission from authenticated, anon, public;
