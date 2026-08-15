@@ -85,6 +85,12 @@ alter table seats enable row level security;
 alter table bookings enable row level security;
 alter table tickets enable row level security;
 
+grant select, insert, update, delete on table users to service_role;
+grant select, insert, update, delete on table events to service_role;
+grant select, insert, update, delete on table seats to service_role;
+grant select, insert, update, delete on table bookings to service_role;
+grant select, insert, update, delete on table tickets to service_role;
+
 create function handle_new_user()
 returns trigger as $$
 begin
