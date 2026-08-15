@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { authMiddleware, requireRole } from '../middlewares/authMiddleware.js'
 
 interface TicketmasterImage {
   url: string
@@ -58,7 +59,7 @@ function toCatalogEvent(event: TicketmasterEvent): CatalogEvent {
   }
 }
 
-router.get('/search', async (req, res) => {
+router.get('/search', authMiddleware, requireRole('organizer'), async (req, res) => {
   const keyword = req.query.keyword?.toString()
   const city = req.query.city?.toString()
 
