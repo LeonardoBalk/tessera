@@ -1,6 +1,7 @@
 import cors from 'cors'
 import 'dotenv/config'
 import express from 'express'
+import authRouter from './routes/auth.js'
 import ticketmasterRouter from './routes/ticketmaster.js'
 
 const app = express()
@@ -14,6 +15,7 @@ app.get('/health', (_req, res) => {
 })
 
 app.use('/api/catalog', ticketmasterRouter)
+app.use('/api/auth', authRouter)
 
 app.listen(port, () => {
   console.log(`tessera server listening on port ${port}`)
