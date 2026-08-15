@@ -98,12 +98,12 @@ begin
   values (
     new.id,
     new.email,
-    coalesce((new.raw_user_meta_data ->> 'role')::user_role, 'customer'),
+    coalesce((new.raw_user_meta_data ->> 'role')::public.user_role, 'customer'),
     coalesce(new.raw_user_meta_data ->> 'name', new.email)
   );
   return new;
 end;
-$$ language plpgsql security definer;
+$$ language plpgsql security definer set search_path = public;
 
 create trigger on_auth_user_created
   after insert on auth.users
@@ -113,7 +113,7 @@ create function custom_access_token_hook(event jsonb)
 returns jsonb as $$
 declare
   claims jsonb;
-  user_role_value user_role;
+  user_role_value public.user_role;
 begin
   select role into user_role_value from public.users where id = (event ->> 'user_id')::uuid;
 
@@ -127,7 +127,7 @@ begin
 
   return jsonb_set(event, '{claims}', claims);
 end;
-$$ language plpgsql;
+$$ language plpgsql set search_path = public;
 
 grant execute on function public.custom_access_token_hook to supabase_auth_admin;
 revoke execute on function public.custom_access_token_hook from authenticated, anon, public;
