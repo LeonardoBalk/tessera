@@ -22,6 +22,7 @@ create table events (
   venue_city text,
   event_date timestamptz not null,
   location text,
+  description text,
   category text,
   type event_type not null,
   price numeric(10, 2) not null check (price >= 0),
