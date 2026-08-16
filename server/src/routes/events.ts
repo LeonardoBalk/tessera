@@ -15,6 +15,7 @@ router.post('/', authMiddleware, requireRole('organizer'), async (req, res) => {
     venueCity,
     eventDate,
     location,
+    description,
     category,
     type,
     price,
@@ -44,6 +45,7 @@ router.post('/', authMiddleware, requireRole('organizer'), async (req, res) => {
       venue_city: venueCity ?? null,
       event_date: eventDate,
       location: location ?? null,
+      description: description ?? null,
       category: category ?? null,
       type,
       price,
@@ -130,6 +132,7 @@ router.patch('/:id', authMiddleware, requireRole('organizer'), async (req, res) 
     venueCity,
     eventDate,
     location,
+    description,
     category,
     price,
     totalCapacity,
@@ -153,6 +156,7 @@ router.patch('/:id', authMiddleware, requireRole('organizer'), async (req, res) 
   if (venueCity !== undefined) updates.venue_city = venueCity
   if (eventDate !== undefined) updates.event_date = eventDate
   if (location !== undefined) updates.location = location
+  if (description !== undefined) updates.description = description
   if (category !== undefined) updates.category = category
   if (price !== undefined) updates.price = price
   if (totalCapacity !== undefined) updates.total_capacity = totalCapacity
