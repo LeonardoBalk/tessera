@@ -1,10 +1,40 @@
 :root {
+  --color-background: #ffffff;
+  --color-surface: #f7f5f2;
+  --color-primary: #e63946;
+  --color-primary-dark: #c42836;
+  --color-text: #1c1c1c;
+  --color-text-muted: #6b6b6b;
+  --color-success: #2e7d5b;
+  --color-danger: #5c2e38;
+  --color-border: #e5e2dc;
+
+  --radius-card: 10px;
+  --shadow-card: 0 1px 3px rgba(28, 28, 28, 0.05);
+
   color-scheme: light;
   font-family: 'Inter', system-ui, sans-serif;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  background: #ffffff;
-  color: #1c1c1c;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+}
+
+button {
+  font-family: inherit;
 }
