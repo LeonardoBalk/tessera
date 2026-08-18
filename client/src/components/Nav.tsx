@@ -22,6 +22,12 @@ export function Nav() {
                 Meus ingressos
               </Link>
             )}
+            {user.role === 'gate_staff' && (
+              <Link to="/portaria" className={styles.navLink}>
+                <Icon name="qr_code_scanner" size={18} color="currentColor" />
+                Portaria
+              </Link>
+            )}
             <button type="button" className={styles.signOut} onClick={signOut}>
               Sair
             </button>

@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import { EventDetail } from './pages/EventDetail'
+import { GateValidation } from './pages/GateValidation'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
 import { MyTickets } from './pages/MyTickets'
@@ -17,6 +18,7 @@ function App() {
       <Route path="/reservas/:bookingId/pagamento" element={<Payment />} />
       <Route path="/ingressos" element={<MyTickets />} />
       <Route path="/ingressos/:id" element={<TicketDetail />} />
+      <Route path="/portaria" element={<GateValidation />} />
     </Routes>
   )
 }

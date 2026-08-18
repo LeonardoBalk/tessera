@@ -43,6 +43,8 @@ export interface TesseraTicket {
   } | null
 }
 
+export type TicketValidationResult = 'valid' | 'invalid' | 'already_used' | 'wrong_event'
+
 export async function fetchPublishedEvents(): Promise<TesseraEvent[]> {
   const response = await fetch(`${API_URL}/api/events`)
 
@@ -100,6 +102,24 @@ export async function fetchTicketById(id: string): Promise<TesseraTicket> {
 
   if (!response.ok) {
     throw new Error('ticket not found')
+  }
+
+  return response.json()
+}
+
+export async function validateTicket(
+  payload: string,
+  eventId: string,
+  accessToken: string,
+): Promise<{ result: TicketValidationResult; holderName: string | null }> {
+  const response = await fetch(`${API_URL}/api/tickets/validate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify({ payload, eventId }),
+  })
+
+  if (!response.ok) {
+    throw new Error('failed to validate ticket')
   }
 
   return response.json()

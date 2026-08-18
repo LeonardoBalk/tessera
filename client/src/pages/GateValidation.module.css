@@ -1,0 +1,167 @@
+.page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px 48px 64px;
+}
+
+.message {
+  padding: 64px 48px;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 24px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.field select,
+.field input {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--color-text);
+  background: var(--color-background);
+  outline: none;
+}
+
+.field select:focus,
+.field input:focus {
+  border-color: var(--color-primary);
+}
+
+.error {
+  color: var(--color-primary);
+  font-size: 13px;
+  margin: 0;
+}
+
+.scannerSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.scannerRegion {
+  width: 100%;
+  max-width: 320px;
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+.scannerButton {
+  width: 100%;
+  background: var(--color-background);
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.scannerButton:hover {
+  background: rgba(230, 57, 70, 0.1);
+}
+
+.submit {
+  background: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.submit:hover {
+  background: var(--color-primary-dark);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.resultPage {
+  min-height: calc(100vh - 90px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.resultCard {
+  width: 100%;
+  max-width: 420px;
+  border-radius: var(--radius-card);
+  padding: 48px 32px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.resultCard h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 12px;
+}
+
+.resultCard p {
+  font-size: 15px;
+  margin: 0 0 24px;
+  opacity: 0.9;
+}
+
+.valid {
+  background: var(--color-success);
+}
+
+.invalid,
+.already_used,
+.wrong_event {
+  background: var(--color-danger);
+}
+
+.resultButton {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.resultButton:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 16px 20px 48px;
+  }
+}
