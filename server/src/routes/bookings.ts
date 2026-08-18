@@ -1,5 +1,7 @@
+import { randomUUID } from 'node:crypto'
 import { Router } from 'express'
 import { authMiddleware, requireRole } from '../middlewares/authMiddleware.js'
+import { signQrPayload } from '../services/qrSigner.js'
 import { supabase } from '../services/supabase.js'
 
 const router = Router()
@@ -76,6 +78,26 @@ router.post('/:id/pay', authMiddleware, requireRole('customer'), async (req, res
   if (error || !data) {
     res.status(409).json({ error: 'booking is not pending payment or has expired' })
     return
+  }
+
+  if (nextStatus === 'paid') {
+    const ticketRows = Array.from({ length: booking.quantity ?? 1 }, () => {
+      const ticketId = randomUUID()
+      return {
+        id: ticketId,
+        booking_id: booking.id,
+        event_id: booking.event_id,
+        customer_id: booking.customer_id,
+        qr_payload: signQrPayload(ticketId, booking.event_id),
+      }
+    })
+
+    const { error: ticketError } = await supabase.from('tickets').insert(ticketRows)
+
+    if (ticketError) {
+      res.status(500).json({ error: 'payment approved but failed to generate tickets' })
+      return
+    }
   }
 
   res.json(data)
