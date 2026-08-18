@@ -16,6 +16,12 @@ export function Nav() {
       <div className={styles.links}>
         {user ? (
           <>
+            {user.role === 'customer' && (
+              <Link to="/ingressos" className={styles.navLink}>
+                <Icon name="confirmation_number" size={18} color="currentColor" />
+                Meus ingressos
+              </Link>
+            )}
             <button type="button" className={styles.signOut} onClick={signOut}>
               Sair
             </button>

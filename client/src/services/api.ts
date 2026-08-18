@@ -29,6 +29,20 @@ export interface TesseraBooking {
   created_at: string
 }
 
+export interface TesseraTicket {
+  id: string
+  status: 'valid' | 'used' | 'canceled'
+  qr_payload: string
+  validated_at: string | null
+  events: {
+    title: string
+    image_url: string | null
+    event_date: string
+    venue_name: string | null
+    venue_city: string | null
+  } | null
+}
+
 export async function fetchPublishedEvents(): Promise<TesseraEvent[]> {
   const response = await fetch(`${API_URL}/api/events`)
 
@@ -67,6 +81,28 @@ export async function createBooking(
   }
 
   return body
+}
+
+export async function fetchMyTickets(accessToken: string): Promise<TesseraTicket[]> {
+  const response = await fetch(`${API_URL}/api/tickets/mine`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+
+  if (!response.ok) {
+    throw new Error('failed to load tickets')
+  }
+
+  return response.json()
+}
+
+export async function fetchTicketById(id: string): Promise<TesseraTicket> {
+  const response = await fetch(`${API_URL}/api/tickets/${id}`)
+
+  if (!response.ok) {
+    throw new Error('ticket not found')
+  }
+
+  return response.json()
 }
 
 export async function payBooking(

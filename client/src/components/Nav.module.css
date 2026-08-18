@@ -38,6 +38,12 @@
   color: var(--color-text);
 }
 
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .avatar {
   width: 38px;
   height: 38px;
