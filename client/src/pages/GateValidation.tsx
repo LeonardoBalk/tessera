@@ -1,7 +1,8 @@
 import { Html5Qrcode } from 'html5-qrcode'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Nav } from '../components/Nav'
+import { LoadingState } from '../components/LoadingState'
+import { PageLayout } from '../components/PageLayout'
 import { useAuth } from '../context/AuthContext'
 import {
   fetchPublishedEvents,
@@ -105,21 +106,20 @@ export function GateValidation() {
 
   if (authLoading || !user) {
     return (
-      <div>
-        <Nav />
-      </div>
+      <PageLayout>
+        <LoadingState />
+      </PageLayout>
     )
   }
 
   if (user.role !== 'gate_staff') {
     return (
-      <div>
-        <Nav />
+      <PageLayout>
         <div className={styles.message}>
           <p>Só contas de portaria podem validar ingressos.</p>
           <Link to="/">Voltar para a home</Link>
         </div>
-      </div>
+      </PageLayout>
     )
   }
 
@@ -135,8 +135,7 @@ export function GateValidation() {
 
   if (result) {
     return (
-      <div>
-        <Nav />
+      <PageLayout>
         <div className={styles.resultPage}>
           <div className={`${styles.resultCard} ${styles[result.result]}`}>
             <h1>{RESULT_LABEL[result.result]}</h1>
@@ -146,14 +145,12 @@ export function GateValidation() {
             </button>
           </div>
         </div>
-      </div>
+      </PageLayout>
     )
   }
 
   return (
-    <div>
-      <Nav />
-
+    <PageLayout>
       <div className={styles.page}>
         <h1 className={styles.title}>Portaria</h1>
 
@@ -204,6 +201,6 @@ export function GateValidation() {
           </button>
         </form>
       </div>
-    </div>
+    </PageLayout>
   )
 }

@@ -2,12 +2,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 24px;
   padding: 20px 48px;
 }
 
 @media (max-width: 640px) {
   .nav {
+    flex-wrap: wrap;
     padding: 16px 20px;
+    gap: 12px;
   }
 
   .links {
@@ -18,10 +21,11 @@
 .logoLink {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .logo {
-  height: 54px;
+  height: 70px;
   width: auto;
   display: block;
 }
@@ -30,6 +34,7 @@
   display: flex;
   align-items: center;
   gap: 32px;
+  flex-shrink: 0;
 }
 
 .links a {
@@ -44,32 +49,72 @@
   gap: 6px;
 }
 
+.menuWrapper {
+  position: relative;
+}
+
 .avatar {
   width: 38px;
   height: 38px;
+  padding: 0;
   border-radius: 50%;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.userName {
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--color-text);
-}
-
-.signOut {
-  background: none;
-  border: none;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--color-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary);
   cursor: pointer;
 }
 
-.signOut:hover {
+.avatar:hover {
+  border-color: var(--color-primary);
+}
+
+.menuPanel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 200px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 8px 24px rgba(28, 28, 28, 0.12);
+  padding: 12px;
+  z-index: 10;
+}
+
+.menuName {
+  font-size: 14px;
+  font-weight: 600;
   color: var(--color-text);
+}
+
+.menuEmail {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menuSignOut {
+  width: 100%;
+  margin-top: 12px;
+  padding-top: 12px;
+  border: none;
+  border-top: 1px solid var(--color-border);
+  background: none;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-primary);
+  text-align: left;
+  cursor: pointer;
+}
+
+.menuSignOut:hover {
+  color: var(--color-primary-dark);
 }

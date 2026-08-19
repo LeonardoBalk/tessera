@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import logo from '../assets/logo-with-text.png'
+import { Footer } from '../components/Footer'
 import { useAuth } from '../context/AuthContext'
 import styles from './Login.module.css'
 
@@ -119,6 +120,8 @@ export function Login() {
           </button>
         </div>
       </div>
+
+      <Footer />
     </div>
   )
 }

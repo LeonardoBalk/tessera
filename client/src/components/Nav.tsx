@@ -1,12 +1,35 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import logo from '../assets/logo-with-text.png'
 import { useAuth } from '../context/AuthContext'
 import { Icon } from './Icon'
 import styles from './Nav.module.css'
 
+function getInitials(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  const first = parts[0]?.[0] ?? ''
+  const last = parts.length > 1 ? parts[parts.length - 1][0] : ''
+  return (first + last).toUpperCase()
+}
+
 export function Nav() {
   const { user, signOut } = useAuth()
   const location = useLocation()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [menuOpen])
 
   return (
     <nav className={styles.nav}>
@@ -28,18 +51,31 @@ export function Nav() {
                 Portaria
               </Link>
             )}
-            <button type="button" className={styles.signOut} onClick={signOut}>
-              Sair
-            </button>
+            <div className={styles.menuWrapper} ref={menuRef}>
+              <button
+                type="button"
+                className={styles.avatar}
+                onClick={() => setMenuOpen((open) => !open)}
+                aria-expanded={menuOpen}
+              >
+                {getInitials(user.name)}
+              </button>
+              {menuOpen && (
+                <div className={styles.menuPanel}>
+                  <div className={styles.menuName}>{user.name}</div>
+                  <div className={styles.menuEmail}>{user.email}</div>
+                  <button type="button" className={styles.menuSignOut} onClick={signOut}>
+                    Sair
+                  </button>
+                </div>
+              )}
+            </div>
           </>
         ) : (
           <Link to="/entrar" state={{ from: location.pathname }}>
             Entrar
           </Link>
         )}
-        <div className={styles.avatar}>
-          <Icon name="person" size={20} color="var(--color-primary)" />
-        </div>
       </div>
     </nav>
   )

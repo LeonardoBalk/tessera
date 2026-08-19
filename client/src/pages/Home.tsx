@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { AiChat } from '../components/AiChat'
 import { CategoryShelf } from '../components/CategoryShelf'
 import { EventCard } from '../components/EventCard'
 import { FeaturedCarousel } from '../components/FeaturedCarousel'
-import { Nav } from '../components/Nav'
-import { SearchBar } from '../components/SearchBar'
+import { PageLayout } from '../components/PageLayout'
 import { fetchPublishedEvents, type TesseraEvent } from '../services/api'
 import { matchesCategory } from '../utils/matchesCategory'
 import styles from './Home.module.css'
@@ -13,7 +13,6 @@ export function Home() {
   const [events, setEvents] = useState<TesseraEvent[]>([])
   const [loadError, setLoadError] = useState(false)
 
-  const [searchText, setSearchText] = useState('')
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
   useEffect(() => {
@@ -29,30 +28,15 @@ export function Home() {
     })
   }, [events, selectedCategory])
 
-  const searchResults = useMemo(() => {
-    const needle = searchText.trim().toLowerCase()
-    if (!needle) return []
-
-    return events
-      .filter((event) => {
-        const haystack = `${event.title} ${event.venue_name ?? ''} ${event.venue_city ?? ''}`.toLowerCase()
-        return haystack.includes(needle)
-      })
-      .slice(0, 6)
-  }, [events, searchText])
-
   const isFiltering = Boolean(selectedCategory)
+  const displayedEvents = isFiltering ? filteredEvents : filteredEvents.slice(0, 8)
 
   function clearFilters() {
-    setSearchText('')
     setSelectedCategory(null)
   }
 
   return (
-    <div>
-      <Nav />
-      <SearchBar searchText={searchText} onSearchChange={setSearchText} searchResults={searchResults} />
-
+    <PageLayout>
       <FeaturedCarousel events={events.slice(0, 5)} />
 
       <div className={styles.categoryRow}>
@@ -69,24 +53,24 @@ export function Home() {
               Limpar filtros
             </button>
           ) : (
-            <a href="/eventos">Ver tudo</a>
+            <Link to="/eventos">Ver tudo</Link>
           )}
         </div>
 
         {loadError && <p className={styles.error}>Não foi possível carregar os eventos.</p>}
 
-        {!loadError && filteredEvents.length === 0 && (
+        {!loadError && displayedEvents.length === 0 && (
           <p className={styles.empty}>
             {isFiltering ? 'Nenhum evento encontrado com esses filtros.' : 'Nenhum evento publicado ainda.'}
           </p>
         )}
 
         <div className={styles.grid}>
-          {filteredEvents.map((event) => (
+          {displayedEvents.map((event) => (
             <EventCard key={event.id} event={event} />
           ))}
         </div>
       </div>
-    </div>
+    </PageLayout>
   )
 }
