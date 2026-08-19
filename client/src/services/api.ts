@@ -31,6 +31,7 @@ export interface TesseraBooking {
 
 export interface TesseraTicket {
   id: string
+  booking_id: string
   status: 'valid' | 'used' | 'canceled'
   qr_payload: string
   validated_at: string | null
@@ -80,6 +81,21 @@ export async function createBooking(
 
   if (!response.ok) {
     throw new Error(body.error ?? 'failed to create booking')
+  }
+
+  return body
+}
+
+export async function cancelBooking(bookingId: string, accessToken: string): Promise<TesseraBooking> {
+  const response = await fetch(`${API_URL}/api/bookings/${bookingId}/cancel`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+
+  const body = await response.json()
+
+  if (!response.ok) {
+    throw new Error(body.error ?? 'failed to cancel booking')
   }
 
   return body

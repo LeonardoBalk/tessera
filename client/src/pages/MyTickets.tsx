@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Icon } from '../components/Icon'
-import { Nav } from '../components/Nav'
+import { LoadingState } from '../components/LoadingState'
+import { PageLayout } from '../components/PageLayout'
 import { useAuth } from '../context/AuthContext'
-import { fetchMyTickets, type TesseraTicket } from '../services/api'
+import { cancelBooking, fetchMyTickets, type TesseraTicket } from '../services/api'
 import { formatEventDate } from '../utils/formatEventDate'
 import styles from './MyTickets.module.css'
 
@@ -26,6 +27,8 @@ export function MyTickets() {
   const [loadError, setLoadError] = useState(false)
   const [activeTab, setActiveTab] = useState<StatusTab>('valid')
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
+  const [cancelingBookingId, setCancelingBookingId] = useState<string | null>(null)
+  const [cancelError, setCancelError] = useState<string | null>(null)
 
   useEffect(() => {
     if (authLoading) return
@@ -55,30 +58,44 @@ export function MyTickets() {
     setVisibleCount(PAGE_SIZE)
   }
 
+  async function handleCancel(bookingId: string) {
+    if (!accessToken) return
+
+    setCancelError(null)
+    setCancelingBookingId(bookingId)
+
+    try {
+      await cancelBooking(bookingId, accessToken)
+      const updated = await fetchMyTickets(accessToken)
+      setTickets(updated)
+    } catch {
+      setCancelError('Não foi possível cancelar esse ingresso.')
+    } finally {
+      setCancelingBookingId(null)
+    }
+  }
+
   if (authLoading || !user || loadingTickets) {
     return (
-      <div>
-        <Nav />
-      </div>
+      <PageLayout>
+        <LoadingState />
+      </PageLayout>
     )
   }
 
   if (user.role !== 'customer') {
     return (
-      <div>
-        <Nav />
+      <PageLayout>
         <div className={styles.message}>
           <p>Só contas de cliente têm ingressos.</p>
           <Link to="/">Voltar para a home</Link>
         </div>
-      </div>
+      </PageLayout>
     )
   }
 
   return (
-    <div>
-      <Nav />
-
+    <PageLayout>
       <div className={styles.page}>
         <h1 className={styles.title}>Meus ingressos</h1>
 
@@ -96,6 +113,7 @@ export function MyTickets() {
         </div>
 
         {loadError && <p className={styles.error}>Não foi possível carregar seus ingressos.</p>}
+        {cancelError && <p className={styles.error}>{cancelError}</p>}
 
         {!loadError && filteredTickets.length === 0 && (
           <p className={styles.empty}>Nenhum ingresso {TABS.find((tab) => tab.key === activeTab)?.label.toLowerCase()}.</p>
@@ -127,9 +145,21 @@ export function MyTickets() {
                 )}
               </div>
 
-              <Link to={`/ingressos/${ticket.id}`} className={styles.accessButton}>
-                Ver ingresso
-              </Link>
+              <div className={styles.actions}>
+                <Link to={`/ingressos/${ticket.id}`} className={styles.accessButton}>
+                  Ver ingresso
+                </Link>
+                {ticket.status === 'valid' && (
+                  <button
+                    type="button"
+                    className={styles.cancelButton}
+                    disabled={cancelingBookingId === ticket.booking_id}
+                    onClick={() => handleCancel(ticket.booking_id)}
+                  >
+                    {cancelingBookingId === ticket.booking_id ? 'Cancelando...' : 'Cancelar'}
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -140,6 +170,6 @@ export function MyTickets() {
           </button>
         )}
       </div>
-    </div>
+    </PageLayout>
   )
 }

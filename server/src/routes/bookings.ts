@@ -103,4 +103,50 @@ router.post('/:id/pay', authMiddleware, requireRole('customer'), async (req, res
   res.json(data)
 })
 
+router.post('/:id/cancel', authMiddleware, requireRole('customer'), async (req, res) => {
+  const { data: booking, error: fetchError } = await supabase
+    .from('bookings')
+    .select('id, customer_id, status')
+    .eq('id', req.params.id)
+    .single()
+
+  if (fetchError || !booking) {
+    res.status(404).json({ error: 'booking not found' })
+    return
+  }
+
+  if (booking.customer_id !== req.auth?.userId) {
+    res.status(403).json({ error: 'not the owner of this booking' })
+    return
+  }
+
+  const { count: usedCount } = await supabase
+    .from('tickets')
+    .select('id', { count: 'exact', head: true })
+    .eq('booking_id', booking.id)
+    .eq('status', 'used')
+
+  if (usedCount && usedCount > 0) {
+    res.status(409).json({ error: 'cannot cancel a booking with a used ticket' })
+    return
+  }
+
+  const { data, error } = await supabase
+    .from('bookings')
+    .update({ status: 'canceled' })
+    .eq('id', req.params.id)
+    .in('status', ['pending', 'paid'])
+    .select()
+    .single()
+
+  if (error || !data) {
+    res.status(409).json({ error: 'booking cannot be canceled' })
+    return
+  }
+
+  await supabase.from('tickets').update({ status: 'canceled' }).eq('booking_id', booking.id).eq('status', 'valid')
+
+  res.json(data)
+})
+
 export default router
