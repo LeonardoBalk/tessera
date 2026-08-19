@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { AiChat } from '../components/AiChat'
 import { CategoryShelf } from '../components/CategoryShelf'
 import { EventCard } from '../components/EventCard'
 import { FeaturedCarousel } from '../components/FeaturedCarousel'
@@ -57,6 +58,8 @@ export function Home() {
       <div className={styles.categoryRow}>
         <CategoryShelf selectedCategory={selectedCategory} onSelectCategory={setSelectedCategory} />
       </div>
+
+      <AiChat />
 
       <div className={styles.showcase}>
         <div className={styles.showcaseHeader}>

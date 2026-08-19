@@ -3,6 +3,7 @@ import 'dotenv/config'
 import express from 'express'
 import authRouter from './routes/auth.js'
 import bookingsRouter from './routes/bookings.js'
+import chatRouter from './routes/chat.js'
 import eventsRouter from './routes/events.js'
 import ticketmasterRouter from './routes/ticketmaster.js'
 import ticketsRouter from './routes/tickets.js'
@@ -22,6 +23,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/events', eventsRouter)
 app.use('/api/bookings', bookingsRouter)
 app.use('/api/tickets', ticketsRouter)
+app.use('/api/chat', chatRouter)
 
 app.listen(port, () => {
   console.log(`tessera server listening on port ${port}`)
