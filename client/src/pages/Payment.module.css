@@ -1,5 +1,5 @@
 .page {
-  max-width: 480px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 24px 48px 64px;
 }
@@ -10,35 +10,48 @@
   color: var(--color-text-muted);
 }
 
+.header {
+  margin-bottom: 24px;
+}
+
 .title {
   font-size: 22px;
   font-weight: 700;
-  margin: 0 0 24px;
+  margin: 0;
 }
 
-.summary {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 20px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-card);
-  margin-bottom: 24px;
-  font-size: 14px;
+.orderNumber {
+  font-size: 13px;
   color: var(--color-text-muted);
+  margin: 4px 0 0;
 }
 
-.total {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--color-text);
-  margin-top: 6px;
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
 }
 
 .form {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
 }
 
 .field {
@@ -64,10 +77,48 @@
   border-color: var(--color-primary);
 }
 
+.hint {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
 .error {
   color: var(--color-primary);
   font-size: 13px;
   margin: 0;
+}
+
+.summary {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.summaryTitle {
+  font-size: 15px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  font-size: 17px;
+  font-weight: 700;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
 }
 
 .submit {
@@ -145,5 +196,9 @@
 @media (max-width: 640px) {
   .page {
     padding: 16px 20px 48px;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
   }
 }
