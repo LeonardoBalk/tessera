@@ -46,6 +46,36 @@ export interface TesseraTicket {
 
 export type TicketValidationResult = 'valid' | 'invalid' | 'already_used' | 'wrong_event'
 
+export interface CatalogSearchResult {
+  sourceEventId: string
+  title: string
+  imageUrl: string | null
+  venueName: string | null
+  venueCity: string | null
+  eventDate: string | null
+  category: string | null
+}
+
+export interface EventInput {
+  sourceEventId?: string | null
+  title: string
+  imageUrl?: string | null
+  venueName?: string | null
+  venueCity?: string | null
+  eventDate: string
+  location?: string | null
+  description?: string | null
+  category?: string | null
+  type: 'seated' | 'general_admission'
+  price: number
+  totalCapacity: number
+}
+
+export interface AiSearchResponse {
+  message: string
+  events: TesseraEvent[]
+}
+
 export async function fetchPublishedEvents(): Promise<TesseraEvent[]> {
   const response = await fetch(`${API_URL}/api/events`)
 
@@ -136,6 +166,89 @@ export async function validateTicket(
 
   if (!response.ok) {
     throw new Error('failed to validate ticket')
+  }
+
+  return response.json()
+}
+
+export async function searchCatalog(
+  keyword: string,
+  city: string,
+  accessToken: string,
+): Promise<CatalogSearchResult[]> {
+  const params = new URLSearchParams()
+  if (keyword) params.set('keyword', keyword)
+  if (city) params.set('city', city)
+
+  const response = await fetch(`${API_URL}/api/catalog/search?${params.toString()}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+
+  if (!response.ok) {
+    throw new Error('failed to search catalog')
+  }
+
+  const body = await response.json()
+  return body.events
+}
+
+export async function fetchMyEvents(accessToken: string): Promise<TesseraEvent[]> {
+  const response = await fetch(`${API_URL}/api/events/mine`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+
+  if (!response.ok) {
+    throw new Error('failed to load events')
+  }
+
+  return response.json()
+}
+
+export async function createEvent(input: EventInput, accessToken: string): Promise<TesseraEvent> {
+  const response = await fetch(`${API_URL}/api/events`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify(input),
+  })
+
+  const body = await response.json()
+
+  if (!response.ok) {
+    throw new Error(body.error ?? 'failed to create event')
+  }
+
+  return body
+}
+
+export async function updateEvent(
+  id: string,
+  input: Partial<EventInput> & { status?: 'published' | 'closed' },
+  accessToken: string,
+): Promise<TesseraEvent> {
+  const response = await fetch(`${API_URL}/api/events/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+    body: JSON.stringify(input),
+  })
+
+  const body = await response.json()
+
+  if (!response.ok) {
+    throw new Error(body.error ?? 'failed to update event')
+  }
+
+  return body
+}
+
+export async function suggestEvents(message: string): Promise<AiSearchResponse> {
+  const response = await fetch(`${API_URL}/api/chat/suggest`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message }),
+  })
+
+  if (!response.ok) {
+    throw new Error('failed to get suggestions')
   }
 
   return response.json()
