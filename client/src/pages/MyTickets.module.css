@@ -102,7 +102,7 @@
 
 .actions {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 8px;
   flex-shrink: 0;
 }
@@ -122,24 +122,59 @@
   color: #ffffff;
 }
 
-.cancelButton {
-  background: none;
+.menuWrapper {
+  position: relative;
+}
+
+.menuButton {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 9px 18px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text-muted);
+  background: var(--color-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 }
 
-.cancelButton:hover {
-  border-color: var(--color-danger);
-  color: var(--color-danger);
+.menuButton:hover {
+  border-color: var(--color-text-muted);
 }
 
-.cancelButton:disabled {
+.menuPanel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 180px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 8px 24px rgba(28, 28, 28, 0.12);
+  padding: 6px;
+  z-index: 10;
+}
+
+.menuCancelButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-danger);
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.menuCancelButton:hover {
+  background: rgba(92, 46, 56, 0.08);
+}
+
+.menuCancelButton:disabled {
   opacity: 0.6;
   cursor: default;
 }

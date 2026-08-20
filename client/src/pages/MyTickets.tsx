@@ -29,6 +29,7 @@ export function MyTickets() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [cancelingBookingId, setCancelingBookingId] = useState<string | null>(null)
   const [cancelError, setCancelError] = useState<string | null>(null)
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null)
 
   useEffect(() => {
     if (authLoading) return
@@ -49,6 +50,20 @@ export function MyTickets() {
       .finally(() => setLoadingTickets(false))
   }, [authLoading, user, accessToken, navigate])
 
+  useEffect(() => {
+    if (!openMenuId) return
+
+    function handleClickOutside(event: MouseEvent) {
+      const target = event.target as HTMLElement
+      if (!target.closest(`[data-menu-id="${openMenuId}"]`)) {
+        setOpenMenuId(null)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [openMenuId])
+
   const filteredTickets = useMemo(() => tickets.filter((ticket) => ticket.status === activeTab), [tickets, activeTab])
   const visibleTickets = filteredTickets.slice(0, visibleCount)
   const hasMore = filteredTickets.length > visibleTickets.length
@@ -61,6 +76,7 @@ export function MyTickets() {
   async function handleCancel(bookingId: string) {
     if (!accessToken) return
 
+    setOpenMenuId(null)
     setCancelError(null)
     setCancelingBookingId(bookingId)
 
@@ -150,14 +166,28 @@ export function MyTickets() {
                   Ver ingresso
                 </Link>
                 {ticket.status === 'valid' && (
-                  <button
-                    type="button"
-                    className={styles.cancelButton}
-                    disabled={cancelingBookingId === ticket.booking_id}
-                    onClick={() => handleCancel(ticket.booking_id)}
-                  >
-                    {cancelingBookingId === ticket.booking_id ? 'Cancelando...' : 'Cancelar'}
-                  </button>
+                  <div className={styles.menuWrapper} data-menu-id={ticket.id}>
+                    <button
+                      type="button"
+                      className={styles.menuButton}
+                      aria-expanded={openMenuId === ticket.id}
+                      onClick={() => setOpenMenuId((current) => (current === ticket.id ? null : ticket.id))}
+                    >
+                      <Icon name="more_vert" size={20} color="var(--color-text-muted)" />
+                    </button>
+                    {openMenuId === ticket.id && (
+                      <div className={styles.menuPanel}>
+                        <button
+                          type="button"
+                          className={styles.menuCancelButton}
+                          disabled={cancelingBookingId === ticket.booking_id}
+                          onClick={() => handleCancel(ticket.booking_id)}
+                        >
+                          {cancelingBookingId === ticket.booking_id ? 'Cancelando...' : 'Cancelar ingresso'}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
