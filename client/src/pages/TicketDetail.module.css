@@ -32,8 +32,8 @@
 }
 
 .used {
-  color: var(--color-text-muted);
-  background: var(--color-surface);
+  color: var(--color-danger);
+  background: rgba(92, 46, 56, 0.1);
 }
 
 .canceled {
@@ -54,6 +54,7 @@
 }
 
 .qrWrapper {
+  position: relative;
   display: flex;
   justify-content: center;
   padding: 20px;
@@ -62,10 +63,77 @@
   margin-bottom: 16px;
 }
 
+.qrDimmed svg {
+  opacity: 0.25;
+  filter: grayscale(1);
+}
+
+.stamp {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-16deg);
+  border: 3px solid currentColor;
+  border-radius: 10px;
+  padding: 8px 20px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 .hint {
   font-size: 13px;
   color: var(--color-text-muted);
   margin: 0 0 20px;
+}
+
+.codeBox {
+  text-align: left;
+  background: var(--color-surface);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+}
+
+.codeLabel {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+}
+
+.codeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.code {
+  flex: 1;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 12px;
+  color: var(--color-text);
+  word-break: break-all;
+  text-align: left;
+}
+
+.copyCodeButton {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.copyCodeButton:hover {
+  border-color: var(--color-text-muted);
 }
 
 .shareButton {

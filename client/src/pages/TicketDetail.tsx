@@ -20,6 +20,7 @@ export function TicketDetail() {
   const [ticket, setTicket] = useState<TesseraTicket | null>(null)
   const [notFound, setNotFound] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [codeCopied, setCodeCopied] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -41,6 +42,13 @@ export function TicketDetail() {
     await navigator.clipboard.writeText(shareUrl)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  async function handleCopyCode() {
+    if (!ticket) return
+    await navigator.clipboard.writeText(ticket.qr_payload)
+    setCodeCopied(true)
+    setTimeout(() => setCodeCopied(false), 2000)
   }
 
   if (notFound) {
@@ -74,16 +82,41 @@ export function TicketDetail() {
             {ticket.events?.venue_name ? ` · ${ticket.events.venue_name}` : ''}
           </div>
 
-          <div className={styles.qrWrapper}>
+          <div className={`${styles.qrWrapper} ${ticket.status !== 'valid' ? styles.qrDimmed : ''}`}>
             <QRCodeSVG value={ticket.qr_payload} size={220} />
+            {ticket.status !== 'valid' && (
+              <span className={`${styles.stamp} ${styles[ticket.status]}`}>{STATUS_LABEL[ticket.status]}</span>
+            )}
           </div>
 
-          <p className={styles.hint}>Apresente esse código na entrada do evento.</p>
+          {ticket.status === 'valid' ? (
+            <p className={styles.hint}>Apresente esse código na entrada do evento.</p>
+          ) : (
+            <p className={styles.hint}>
+              {ticket.status === 'canceled'
+                ? 'Este ingresso foi cancelado e não pode ser utilizado.'
+                : 'Este ingresso já foi utilizado nesse evento.'}
+            </p>
+          )}
 
-          <button type="button" className={styles.shareButton} onClick={handleShare}>
-            <Icon name="share" size={18} color="var(--color-primary)" />
-            {copied ? 'Link copiado!' : 'Compartilhar ingresso'}
-          </button>
+          {ticket.status === 'valid' && (
+            <div className={styles.codeBox}>
+              <span className={styles.codeLabel}>Código do ingresso (caso o QR não possa ser lido)</span>
+              <div className={styles.codeRow}>
+                <code className={styles.code}>{ticket.qr_payload}</code>
+                <button type="button" className={styles.copyCodeButton} onClick={handleCopyCode}>
+                  <Icon name={codeCopied ? 'check' : 'content_copy'} size={16} color="var(--color-text-muted)" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {ticket.status === 'valid' && (
+            <button type="button" className={styles.shareButton} onClick={handleShare}>
+              <Icon name="share" size={18} color="var(--color-primary)" />
+              {copied ? 'Link copiado!' : 'Compartilhar ingresso'}
+            </button>
+          )}
         </div>
       </div>
     </PageLayout>
