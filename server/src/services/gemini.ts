@@ -38,7 +38,11 @@ async function generateContent(prompt: string, responseSchema?: object) {
 
 export async function extractEventFilters(message: string): Promise<EventFilters> {
   const today = new Date().toISOString().slice(0, 10)
-  const prompt = `Hoje é ${today}. Extraia filtros de busca de eventos da frase do usuário abaixo. Nunca invente nomes de eventos ou dados que não estejam na frase, extraia só o que foi pedido. Se um filtro não aparecer, retorne null pra ele. Se a frase mencionar um período de tempo (um dia específico, "hoje", um fim de semana, um mês inteiro), calcule o intervalo de datas correspondente e retorne em dateFrom e dateTo, ambos no formato "AAAA-MM-DD", cobrindo do primeiro ao último dia desse período. Se for um único dia, dateFrom e dateTo devem ser iguais.
+  const prompt = `Hoje é ${today}. Extraia filtros de busca de eventos da frase do usuário abaixo. Nunca invente nomes de eventos ou dados que não estejam na frase, extraia só o que foi pedido. Se um filtro não aparecer, retorne null pra ele.
+
+O campo category só pode ser exatamente um destes quatro valores, ou null: "Música", "Artes e Teatro", "Esportes", "Variado". Mapeie o que o usuário disse pro valor mais próximo: show, banda, cantor, festival ou concerto vira "Música"; peça, espetáculo ou stand-up vira "Artes e Teatro"; jogo, partida ou corrida vira "Esportes"; qualquer outro tipo de evento vira "Variado". Se não for possível identificar nenhum tipo de evento, retorne null.
+
+Se a frase mencionar um período de tempo (um dia específico, "hoje", um fim de semana, um mês inteiro), calcule o intervalo de datas correspondente e retorne em dateFrom e dateTo, ambos no formato "AAAA-MM-DD", cobrindo do primeiro ao último dia desse período. Se for um único dia, dateFrom e dateTo devem ser iguais.
 
 Frase: "${message}"`
 
