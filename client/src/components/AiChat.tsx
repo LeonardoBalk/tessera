@@ -49,13 +49,12 @@ export function AiChat() {
   return (
     <>
       <button type="button" className={styles.fab} onClick={() => setOpen((current) => !current)}>
-        <Icon name={open ? 'close' : 'auto_awesome'} size={24} color="#ffffff" />
+        <Icon name={'auto_awesome'} size={24} color="#ffffff" />
       </button>
 
       {open && (
         <div className={styles.panel}>
           <div className={styles.header}>
-            <Icon name="auto_awesome" size={20} color="#ffffff" />
             <span>Assistente Tessera</span>
           </div>
 
