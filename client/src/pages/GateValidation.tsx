@@ -1,6 +1,8 @@
 import { Html5Qrcode } from 'html5-qrcode'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Dropdown } from '../components/Dropdown'
+import { Icon } from '../components/Icon'
 import { LoadingState } from '../components/LoadingState'
 import { PageLayout } from '../components/PageLayout'
 import { useAuth } from '../context/AuthContext'
@@ -134,10 +136,18 @@ export function GateValidation() {
   }
 
   if (result) {
+    const isValid = result.result === 'valid'
     return (
       <PageLayout>
         <div className={styles.resultPage}>
           <div className={`${styles.resultCard} ${styles[result.result]}`}>
+            <div className={styles.resultIcon}>
+              <Icon
+                name={isValid ? 'check_circle' : 'cancel'}
+                size={32}
+                color={isValid ? 'var(--color-success)' : 'var(--color-danger)'}
+              />
+            </div>
             <h1>{RESULT_LABEL[result.result]}</h1>
             {result.holderName && <p>{result.holderName}</p>}
             <button type="button" className={styles.resultButton} onClick={scanAnother}>
@@ -154,52 +164,54 @@ export function GateValidation() {
       <div className={styles.page}>
         <h1 className={styles.title}>Portaria</h1>
 
-        <label className={styles.field}>
-          Evento
-          <select
-            value={eventId}
-            disabled={scannerActive}
-            onChange={(changeEvent) => setEventId(changeEvent.target.value)}
-          >
-            {events.map((event) => (
-              <option key={event.id} value={event.id}>
-                {event.title}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <div className={styles.scannerSection}>
-          <div id={SCANNER_ELEMENT_ID} className={styles.scannerRegion} hidden={!scannerActive} />
-
-          {scannerError && <p className={styles.error}>{scannerError}</p>}
-
-          <button
-            type="button"
-            className={styles.scannerButton}
-            onClick={scannerActive ? stopScanner : startScanner}
-          >
-            {scannerActive ? 'Parar scanner' : 'Iniciar scanner'}
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <label className={styles.field}>
-            Código do ingresso
-            <input
-              value={payload}
-              onChange={(changeEvent) => setPayload(changeEvent.target.value)}
-              placeholder="Ou cole o código manualmente"
-              required
+        <div className={styles.card}>
+          <div className={styles.field}>
+            Evento
+            <Dropdown
+              value={eventId}
+              disabled={scannerActive}
+              onChange={setEventId}
+              options={events.map((event) => ({ value: event.id, label: event.title }))}
             />
-          </label>
+          </div>
 
-          {error && <p className={styles.error}>{error}</p>}
+          <div className={styles.scannerSection}>
+            <div id={SCANNER_ELEMENT_ID} className={styles.scannerRegion} hidden={!scannerActive} />
 
-          <button type="submit" className={styles.submit} disabled={submitting || !eventId}>
-            {submitting ? 'Validando...' : 'Validar'}
-          </button>
-        </form>
+            {scannerError && <p className={styles.error}>{scannerError}</p>}
+
+            <button
+              type="button"
+              className={styles.scannerButton}
+              onClick={scannerActive ? stopScanner : startScanner}
+            >
+              <Icon name="qr_code_scanner" size={18} color="var(--color-primary)" />
+              {scannerActive ? 'Parar scanner' : 'Iniciar scanner'}
+            </button>
+          </div>
+
+          <div className={styles.divider}>
+            <span>ou</span>
+          </div>
+
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <label className={styles.field}>
+              Código do ingresso
+              <input
+                value={payload}
+                onChange={(changeEvent) => setPayload(changeEvent.target.value)}
+                placeholder="Cole ou digite o código"
+                required
+              />
+            </label>
+
+            {error && <p className={styles.error}>{error}</p>}
+
+            <button type="submit" className={styles.submit} disabled={submitting || !eventId}>
+              {submitting ? 'Validando...' : 'Validar'}
+            </button>
+          </form>
+        </div>
       </div>
     </PageLayout>
   )

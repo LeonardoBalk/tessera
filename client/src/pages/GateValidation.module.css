@@ -16,6 +16,31 @@
   margin: 0 0 24px;
 }
 
+.card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-border);
+}
+
 .form {
   display: flex;
   flex-direction: column;
@@ -31,7 +56,6 @@
   color: var(--color-text-muted);
 }
 
-.field select,
 .field input {
   border: 1px solid var(--color-border);
   border-radius: 8px;
@@ -43,7 +67,6 @@
   outline: none;
 }
 
-.field select:focus,
 .field input:focus {
   border-color: var(--color-primary);
 }
@@ -70,6 +93,10 @@
 
 .scannerButton {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   background: var(--color-background);
   color: var(--color-primary);
   border: 1px solid var(--color-primary);
@@ -115,41 +142,53 @@
 
 .resultCard {
   width: 100%;
-  max-width: 420px;
+  max-width: 380px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
-  padding: 48px 32px;
+  padding: 40px 32px;
   text-align: center;
-  color: #ffffff;
+}
+
+.resultIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 40px;
+}
+
+.valid .resultIcon {
+  background: rgba(46, 125, 91, 0.1);
+}
+
+.invalid .resultIcon,
+.already_used .resultIcon,
+.wrong_event .resultIcon {
+  background: rgba(92, 46, 56, 0.1);
 }
 
 .resultCard h1 {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
-  margin: 0 0 12px;
+  margin: 0 0 8px;
+  color: var(--color-text);
 }
 
 .resultCard p {
-  font-size: 15px;
+  font-size: 14px;
+  color: var(--color-text-muted);
   margin: 0 0 24px;
-  opacity: 0.9;
-}
-
-.valid {
-  background: var(--color-success);
-}
-
-.invalid,
-.already_used,
-.wrong_event {
-  background: var(--color-danger);
 }
 
 .resultButton {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--color-primary);
   color: #ffffff;
   border: none;
   border-radius: 8px;
-  padding: 10px 20px;
+  padding: 12px 24px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -157,7 +196,7 @@
 }
 
 .resultButton:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--color-primary-dark);
 }
 
 @media (max-width: 640px) {
