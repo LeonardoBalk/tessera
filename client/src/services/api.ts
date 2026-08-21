@@ -19,6 +19,11 @@ export interface TesseraEvent {
   created_at: string
 }
 
+export interface OrganizerEventSummary extends TesseraEvent {
+  sold_quantity: number
+  has_bookings: boolean
+}
+
 export interface TesseraBooking {
   id: string
   event_id: string
@@ -192,7 +197,7 @@ export async function searchCatalog(
   return body.events
 }
 
-export async function fetchMyEvents(accessToken: string): Promise<TesseraEvent[]> {
+export async function fetchMyEvents(accessToken: string): Promise<OrganizerEventSummary[]> {
   const response = await fetch(`${API_URL}/api/events/mine`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   })
@@ -238,6 +243,18 @@ export async function updateEvent(
   }
 
   return body
+}
+
+export async function deleteEvent(id: string, accessToken: string): Promise<void> {
+  const response = await fetch(`${API_URL}/api/events/${id}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}))
+    throw new Error(body.error ?? 'failed to delete event')
+  }
 }
 
 export async function suggestEvents(message: string): Promise<AiSearchResponse> {

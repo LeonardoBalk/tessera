@@ -79,7 +79,7 @@ router.get('/', async (_req, res) => {
 })
 
 router.get('/mine', authMiddleware, requireRole('organizer'), async (req, res) => {
-  const { data, error } = await supabase
+  const { data: events, error } = await supabase
     .from('events')
     .select('*')
     .eq('organizer_id', req.auth?.userId)
@@ -90,7 +90,31 @@ router.get('/mine', authMiddleware, requireRole('organizer'), async (req, res) =
     return
   }
 
-  res.json(data)
+  const eventIds = events.map((event) => event.id)
+  const soldByEvent = new Map<string, number>()
+  const hasBookingsByEvent = new Set<string>()
+
+  if (eventIds.length > 0) {
+    const { data: bookings } = await supabase
+      .from('bookings')
+      .select('event_id, quantity, status')
+      .in('event_id', eventIds)
+
+    for (const booking of bookings ?? []) {
+      hasBookingsByEvent.add(booking.event_id)
+      if (booking.status === 'paid') {
+        soldByEvent.set(booking.event_id, (soldByEvent.get(booking.event_id) ?? 0) + (booking.quantity ?? 0))
+      }
+    }
+  }
+
+  const withSales = events.map((event) => ({
+    ...event,
+    sold_quantity: soldByEvent.get(event.id) ?? 0,
+    has_bookings: hasBookingsByEvent.has(event.id),
+  }))
+
+  res.json(withSales)
 })
 
 router.get('/:id', async (req, res) => {
@@ -175,6 +199,43 @@ router.patch('/:id', authMiddleware, requireRole('organizer'), async (req, res) 
   }
 
   res.json(data)
+})
+
+router.delete('/:id', authMiddleware, requireRole('organizer'), async (req, res) => {
+  const { data: existingEvent, error: fetchError } = await supabase
+    .from('events')
+    .select('organizer_id')
+    .eq('id', req.params.id)
+    .single()
+
+  if (fetchError || !existingEvent) {
+    res.status(404).json({ error: 'event not found' })
+    return
+  }
+
+  if (existingEvent.organizer_id !== req.auth?.userId) {
+    res.status(403).json({ error: 'not the organizer of this event' })
+    return
+  }
+
+  const { count: bookingCount } = await supabase
+    .from('bookings')
+    .select('id', { count: 'exact', head: true })
+    .eq('event_id', req.params.id)
+
+  if (bookingCount && bookingCount > 0) {
+    res.status(409).json({ error: 'event already has bookings and cannot be deleted' })
+    return
+  }
+
+  const { error } = await supabase.from('events').delete().eq('id', req.params.id)
+
+  if (error) {
+    res.status(500).json({ error: 'failed to delete event' })
+    return
+  }
+
+  res.status(204).send()
 })
 
 export default router

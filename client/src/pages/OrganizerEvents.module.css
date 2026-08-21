@@ -100,6 +100,36 @@
   color: var(--color-text-muted);
 }
 
+.sales {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.salesRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.salesBar {
+  width: 100%;
+  max-width: 220px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-surface);
+  overflow: hidden;
+}
+
+.salesBarFill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 999px;
+}
+
 .status {
   flex-shrink: 0;
   font-size: 12px;
@@ -131,6 +161,64 @@
 .editButton:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
+}
+
+.menuWrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.menuButton {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.menuButton:hover {
+  border-color: var(--color-text-muted);
+}
+
+.menuPanel {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 200px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 8px 24px rgba(28, 28, 28, 0.12);
+  padding: 6px;
+  z-index: 10;
+}
+
+.menuDeleteButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-danger);
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.menuDeleteButton:hover:not(:disabled) {
+  background: rgba(92, 46, 56, 0.08);
+}
+
+.menuDeleteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 @media (max-width: 640px) {
