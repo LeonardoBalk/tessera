@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { EventCard } from '../components/EventCard'
 import { Icon } from '../components/Icon'
+import { LoadingState } from '../components/LoadingState'
 import { PageLayout } from '../components/PageLayout'
 import { fetchPublishedEvents, type TesseraEvent } from '../services/api'
 import { matchesCategory } from '../utils/matchesCategory'
@@ -9,25 +10,35 @@ import styles from './AllEvents.module.css'
 
 const CATEGORIES = ['Shows', 'Teatro', 'Esportes', 'Outros']
 
-type SortOption = 'relevance' | 'date' | 'price_asc' | 'price_desc'
+type SortOption = 'date' | 'price_asc' | 'price_desc'
 type OpenFilter = 'city' | 'category' | 'date' | 'price' | null
+
+function formatShortDate(value: string) {
+  return new Date(`${value}T00:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+}
 
 function FilterDropdown({
   label,
+  active,
   isOpen,
   onToggle,
   children,
 }: {
   label: string
+  active: boolean
   isOpen: boolean
   onToggle: () => void
   children: ReactNode
 }) {
   return (
     <div className={styles.filterWrapper}>
-      <button type="button" className={styles.filterPill} onClick={onToggle}>
+      <button
+        type="button"
+        className={`${styles.filterPill} ${active ? styles.filterPillActive : ''}`}
+        onClick={onToggle}
+      >
         <span>{label}</span>
-        <Icon name="expand_more" size={18} color="var(--color-text)" />
+        <Icon name="expand_more" size={18} color={active ? 'var(--color-primary)' : 'var(--color-text)'} />
       </button>
       {isOpen && <div className={styles.filterPanel}>{children}</div>}
     </div>
@@ -38,25 +49,31 @@ export function AllEvents() {
   const [searchParams] = useSearchParams()
 
   const [events, setEvents] = useState<TesseraEvent[]>([])
+  const [loadingEvents, setLoadingEvents] = useState(true)
   const [loadError, setLoadError] = useState(false)
 
   const [searchText, setSearchText] = useState(searchParams.get('q') ?? '')
   const [selectedCity, setSelectedCity] = useState<string | null>(null)
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(searchParams.get('categoria'))
   const [dateFrom, setDateFrom] = useState('')
   const [dateTo, setDateTo] = useState('')
   const [maxPrice, setMaxPrice] = useState('')
-  const [sortBy, setSortBy] = useState<SortOption>('relevance')
+  const [sortBy, setSortBy] = useState<SortOption>('date')
   const [openFilter, setOpenFilter] = useState<OpenFilter>(null)
 
   useEffect(() => {
     fetchPublishedEvents()
       .then(setEvents)
       .catch(() => setLoadError(true))
+      .finally(() => setLoadingEvents(false))
   }, [])
 
   useEffect(() => {
     setSearchText(searchParams.get('q') ?? '')
+  }, [searchParams])
+
+  useEffect(() => {
+    setSelectedCategory(searchParams.get('categoria'))
   }, [searchParams])
 
   const cities = useMemo(
@@ -117,6 +134,17 @@ export function AllEvents() {
       <div className={styles.header}>
         <h1 className={styles.title}>Todos os eventos</h1>
 
+        <div className={styles.searchBar}>
+          <Icon name="search" size={18} color="var(--color-text-muted)" />
+          <input
+            type="search"
+            className={styles.searchInput}
+            placeholder="Buscar eventos..."
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
+          />
+        </div>
+
         <div className={styles.cityWrapper}>
           <button type="button" className={styles.cityPill} onClick={() => toggleFilter('city')}>
             <Icon name="location_on" size={18} color="var(--color-primary)" />
@@ -157,7 +185,12 @@ export function AllEvents() {
       <div className={styles.secondaryFilterRow}>
         <span className={styles.filterLabel}>Filtrar por</span>
 
-        <FilterDropdown label="Categoria" isOpen={openFilter === 'category'} onToggle={() => toggleFilter('category')}>
+        <FilterDropdown
+          label={selectedCategory ?? 'Categoria'}
+          active={Boolean(selectedCategory)}
+          isOpen={openFilter === 'category'}
+          onToggle={() => toggleFilter('category')}
+        >
           <button
             type="button"
             className={styles.optionButton}
@@ -183,7 +216,20 @@ export function AllEvents() {
           ))}
         </FilterDropdown>
 
-        <FilterDropdown label="Data" isOpen={openFilter === 'date'} onToggle={() => toggleFilter('date')}>
+        <FilterDropdown
+          label={
+            dateFrom && dateTo
+              ? `${formatShortDate(dateFrom)} - ${formatShortDate(dateTo)}`
+              : dateFrom
+                ? `A partir de ${formatShortDate(dateFrom)}`
+                : dateTo
+                  ? `Até ${formatShortDate(dateTo)}`
+                  : 'Data'
+          }
+          active={Boolean(dateFrom || dateTo)}
+          isOpen={openFilter === 'date'}
+          onToggle={() => toggleFilter('date')}
+        >
           <label className={styles.panelField}>
             <span>De</span>
             <input type="date" value={dateFrom} onChange={(event) => setDateFrom(event.target.value)} />
@@ -194,7 +240,12 @@ export function AllEvents() {
           </label>
         </FilterDropdown>
 
-        <FilterDropdown label="Preço" isOpen={openFilter === 'price'} onToggle={() => toggleFilter('price')}>
+        <FilterDropdown
+          label={maxPrice.trim() ? `Até R$ ${maxPrice}` : 'Preço'}
+          active={Boolean(maxPrice.trim())}
+          isOpen={openFilter === 'price'}
+          onToggle={() => toggleFilter('price')}
+        >
           <label className={styles.panelField}>
             <span>Até</span>
             <input
@@ -214,7 +265,6 @@ export function AllEvents() {
             value={sortBy}
             onChange={(event) => setSortBy(event.target.value as SortOption)}
           >
-            <option value="relevance">Relevância</option>
             <option value="date">Data</option>
             <option value="price_asc">Menor preço</option>
             <option value="price_desc">Maior preço</option>
@@ -224,7 +274,7 @@ export function AllEvents() {
 
       <div className={styles.showcase}>
         <div className={styles.showcaseHeader}>
-          <span className={styles.count}>{sortedEvents.length} eventos encontrados</span>
+          {!loadingEvents && <span className={styles.count}>{sortedEvents.length} eventos encontrados</span>}
           {isFiltering && (
             <button type="button" className={styles.clearFilters} onClick={clearFilters}>
               Limpar filtros
@@ -232,15 +282,21 @@ export function AllEvents() {
           )}
         </div>
 
-        {loadError && <p className={styles.error}>Não foi possível carregar os eventos.</p>}
+        {loadingEvents && <LoadingState />}
 
-        {!loadError && sortedEvents.length === 0 && <p className={styles.empty}>Nenhum evento encontrado.</p>}
+        {!loadingEvents && loadError && <p className={styles.error}>Não foi possível carregar os eventos.</p>}
 
-        <div className={styles.grid}>
-          {sortedEvents.map((event) => (
-            <EventCard key={event.id} event={event} />
-          ))}
-        </div>
+        {!loadingEvents && !loadError && sortedEvents.length === 0 && (
+          <p className={styles.empty}>Nenhum evento encontrado.</p>
+        )}
+
+        {!loadingEvents && (
+          <div className={styles.grid}>
+            {sortedEvents.map((event) => (
+              <EventCard key={event.id} event={event} />
+            ))}
+          </div>
+        )}
       </div>
     </PageLayout>
   )

@@ -24,20 +24,6 @@
   font-weight: 600;
 }
 
-.clearFilters {
-  background: none;
-  border: none;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-primary);
-  cursor: pointer;
-}
-
-.clearFilters:hover {
-  color: var(--color-primary-dark);
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

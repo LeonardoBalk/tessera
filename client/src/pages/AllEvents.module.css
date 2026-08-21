@@ -11,6 +11,40 @@
   margin: 0;
 }
 
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  max-width: 360px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 10px 16px;
+}
+
+.searchBar:focus-within {
+  border-color: var(--color-primary);
+}
+
+.searchInput {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--color-text);
+  width: 100%;
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-muted);
+}
+
+.searchInput::-webkit-search-cancel-button {
+  cursor: pointer;
+}
+
 .cityWrapper,
 .filterWrapper,
 .sortWrapper {
@@ -71,6 +105,12 @@
   font-size: 14px;
   font-weight: 500;
   color: var(--color-text);
+}
+
+.filterPillActive {
+  background: rgba(230, 57, 70, 0.1);
+  border-color: transparent;
+  color: var(--color-primary);
 }
 
 .filterPanel {
@@ -205,6 +245,11 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+
+  .searchBar {
+    max-width: none;
+    width: 100%;
   }
 
   .secondaryFilterRow {
