@@ -65,6 +65,12 @@ O catálogo está dividido entre os dois organizadores de propósito, não por a
 
 **Categorias na busca por IA:** a extração de categoria em `POST /api/chat/suggest` usa uma lista fixa de valores no prompt (`Música`, `Artes e Teatro`, `Esportes`, `Variado`), que reflete a taxonomia de segmentos do Ticketmaster observada no catálogo. Essa mesma limitação já existe em `client/src/utils/matchesCategory.ts`, usado nos filtros de categoria da Home e da listagem de eventos. Se o catálogo passar a trazer categorias fora dessa lista, o prompt em `server/src/services/gemini.ts` precisa ser atualizado manualmente.
 
+## Uso de IA
+
+Apoio pontual: alguns CRUDs repetitivos, tarefas mecânicas e ajustes de estilização. Modelagem do banco, arquitetura, fluxo das telas e regras de negócio (pagamento simulado, QR code assinado, controle por papel) foram feitos manualmente.
+
+A busca por linguagem natural (ícone flutuante) é uma funcionalidade separada, que usa a API do Gemini em tempo real pra extrair filtros de uma frase livre, não uso de IA pra desenvolver. Cada resposta leva de 20 a 25s porque o modelo (`gemini-3.6-flash`) tem raciocínio interno antes de responder.
+
 ## Status atual
 
 Neste momento o repositório tem só o scaffold dos dois projetos e o schema do banco. Autenticação, CRUD de evento, reserva, pagamento simulado, geração de ingresso e portaria ainda não foram implementados, entram nos próximos commits conforme o cronograma do desafio.
