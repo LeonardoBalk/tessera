@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
+import { Icon } from '../components/Icon'
 import { PageLayout } from '../components/PageLayout'
 import { useAuth } from '../context/AuthContext'
 import { payBooking, type TesseraBooking, type TesseraEvent } from '../services/api'
@@ -58,6 +59,9 @@ export function Payment() {
       <PageLayout>
         <div className={styles.resultPage}>
           <div className={`${styles.resultCard} ${styles.success}`}>
+            <div className={styles.resultIcon}>
+              <Icon name="check_circle" size={32} color="var(--color-success)" />
+            </div>
             <h1>Pagamento aprovado</h1>
             <p>Seu ingresso para {event.title} foi gerado com o código QR.</p>
             <Link to="/" className={styles.resultLink}>
@@ -74,6 +78,9 @@ export function Payment() {
       <PageLayout>
         <div className={styles.resultPage}>
           <div className={`${styles.resultCard} ${styles.declined}`}>
+            <div className={styles.resultIcon}>
+              <Icon name="cancel" size={32} color="var(--color-danger)" />
+            </div>
             <h1>Pagamento recusado</h1>
             <p>Não foi possível aprovar o pagamento com esse cartão.</p>
             <Link to={`/eventos/${event.id}`} className={styles.resultLink}>

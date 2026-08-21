@@ -151,45 +151,57 @@
 
 .resultCard {
   width: 100%;
-  max-width: 420px;
+  max-width: 380px;
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
-  padding: 48px 32px;
+  padding: 40px 32px;
   text-align: center;
-  color: #ffffff;
+}
+
+.resultIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 32px;
+}
+
+.success .resultIcon {
+  background: rgba(46, 125, 91, 0.1);
+}
+
+.declined .resultIcon {
+  background: rgba(92, 46, 56, 0.1);
 }
 
 .resultCard h1 {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
-  margin: 0 0 12px;
+  margin: 0 0 8px;
+  color: var(--color-text);
 }
 
 .resultCard p {
-  font-size: 15px;
+  font-size: 14px;
+  color: var(--color-text-muted);
   margin: 0 0 24px;
-  opacity: 0.9;
-}
-
-.success {
-  background: var(--color-success);
-}
-
-.declined {
-  background: var(--color-danger);
 }
 
 .resultLink {
   display: inline-block;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--color-primary);
   color: #ffffff;
   border-radius: 8px;
-  padding: 10px 20px;
+  padding: 12px 24px;
   font-size: 14px;
   font-weight: 600;
 }
 
 .resultLink:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--color-primary-dark);
   color: #ffffff;
 }
 
