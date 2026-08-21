@@ -69,7 +69,7 @@ export function EventDetail() {
       const booking = await createBooking(id, quantity, accessToken)
       navigate(`/reservas/${booking.id}/pagamento`, { state: { booking, event } })
     } catch {
-      setError('Não foi possível reservar, tente uma quantidade menor ou volte mais tarde.')
+      setError('Não foi possível reservar, tente uma quantidade menor ou volte mais tarde. Este evento pode ter sido esgotado.')
     } finally {
       setSubmitting(false)
     }
@@ -156,7 +156,7 @@ export function EventDetail() {
                 {error && <p className={styles.error}>{error}</p>}
 
                 <button type="button" className={styles.cta} onClick={handleContinue} disabled={submitting}>
-                  {submitting ? 'Reservando...' : 'Ir para pagamento'}
+                  {submitting ? 'Reservando...' : 'Comprar ingresso'}
                 </button>
               </>
             )}
