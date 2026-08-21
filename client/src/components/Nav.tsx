@@ -51,6 +51,12 @@ export function Nav() {
                 Portaria
               </Link>
             )}
+            {user.role === 'organizer' && (
+              <Link to="/organizador/eventos" className={styles.navLink}>
+                <Icon name="event" size={18} color="currentColor" />
+                Meus eventos
+              </Link>
+            )}
             <div className={styles.menuWrapper} ref={menuRef}>
               <button
                 type="button"
