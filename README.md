@@ -71,6 +71,11 @@ Apoio pontual: alguns CRUDs repetitivos, tarefas mecânicas e ajustes de estiliz
 
 A busca por linguagem natural (ícone flutuante) é uma funcionalidade separada, que usa a API do Gemini em tempo real pra extrair filtros de uma frase livre, não uso de IA pra desenvolver. Cada resposta leva de 20 a 25s porque o modelo (`gemini-3.6-flash`) tem raciocínio interno antes de responder.
 
+## Deploy
+
+- Cliente: https://tesseratickets.vercel.app
+- API: https://tessera-tickets.vercel.app
+
 ## Status atual
 
-Neste momento o repositório tem só o scaffold dos dois projetos e o schema do banco. Autenticação, CRUD de evento, reserva, pagamento simulado, geração de ingresso e portaria ainda não foram implementados, entram nos próximos commits conforme o cronograma do desafio.
+Fluxo completo funcionando: autenticação por papel, CRUD de evento pelo organizador (com contagem de ingressos vendidos e exclusão bloqueada quando há reserva vinculada), busca no catálogo (filtros e busca por linguagem natural via IA), reserva com pagamento simulado, geração de ingresso com QR code assinado, e validação na portaria por câmera ou código manual.
