@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Dropdown } from '../components/Dropdown'
 import { Icon } from '../components/Icon'
 import { LoadingState } from '../components/LoadingState'
 import { PageLayout } from '../components/PageLayout'
@@ -154,13 +155,17 @@ export function EditEvent() {
         <h1 className={styles.title}>Editar evento</h1>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-          <label className={styles.field}>
+          <div className={styles.field}>
             Status
-            <select value={status} onChange={(changeEvent) => setStatus(changeEvent.target.value as TesseraEvent['status'])}>
-              <option value="published">Publicado</option>
-              <option value="closed">Fechado</option>
-            </select>
-          </label>
+            <Dropdown
+              value={status}
+              onChange={(value) => setStatus(value as TesseraEvent['status'])}
+              options={[
+                { value: 'published', label: 'Publicado' },
+                { value: 'closed', label: 'Fechado' },
+              ]}
+            />
+          </div>
 
           <label className={styles.field}>
             Título
