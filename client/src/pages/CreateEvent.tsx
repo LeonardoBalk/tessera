@@ -153,7 +153,7 @@ export function CreateEvent() {
               placeholder="Cidade (opcional)"
             />
             <button type="submit" className={styles.searchButton} disabled={searching}>
-              {searching ? 'Buscando...' : 'Buscar'}
+                   <Icon name="search" size={20} color="var(--color-background)" />
             </button>
           </form>
 
